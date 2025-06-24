@@ -3,14 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../widgets/edit_task_sheet.dart';
 
+/// Tarjeta visual que representa una tarea en la lista.
+/// Muestra título, estado (hecha o no), fecha y hora de vencimiento (si existen),
+/// y permite editar o eliminar la tarea.
 class TaskCard extends StatelessWidget {
   final String title;
   final bool isDone;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
   final Animation<double> iconRotation;
-  final DateTime? dueDate;
-  final TimeOfDay? dueTime;
+  final DateTime? dueDate;    // Fecha en que debe notificarse la tarea
+  final TimeOfDay? dueTime;   // Hora específica de la notificación
   final int index;
 
   const TaskCard({
@@ -65,6 +68,7 @@ class TaskCard extends StatelessWidget {
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Muestra el título de la tarea
               Text(
                 title,
                 style: TextStyle(
@@ -74,6 +78,7 @@ class TaskCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              // Si la tarea tiene fecha, mostrarla
               if (dueDate != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
@@ -85,6 +90,7 @@ class TaskCard extends StatelessWidget {
                         'Vence: ${DateFormat('dd/MM/yyyy').format(dueDate!)}',
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
+                      // Si también tiene hora, mostrarla
                       if (dueTime != null)
                         Text(
                           'Hora: ${dueTime!.hour.toString().padLeft(2, '0')}:${dueTime!.minute.toString().padLeft(2, '0')}',
@@ -98,6 +104,7 @@ class TaskCard extends StatelessWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Botón para editar la tarea (permite cambiar fecha/hora y reprogramar notificación)
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.blue),
                 onPressed: () {
@@ -111,6 +118,7 @@ class TaskCard extends StatelessWidget {
                   );
                 },
               ),
+              // Botón para eliminar la tarea (también cancela su notificación si tiene)
               IconButton(
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
                 onPressed: onDelete,
