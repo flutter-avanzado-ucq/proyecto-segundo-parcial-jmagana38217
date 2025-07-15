@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
+
 import '../widgets/card_tarea.dart';
 import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
 import '../provider_task/task_provider.dart';
-import '../provider_task/theme_provider.dart'; // Nuevo import
+import '../provider_task/theme_provider.dart';
+import '../screens/settings_screen.dart'; // ✅ NUEVO: Importar SettingsScreen
 
 // Importar AppLocalizations generado
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -49,23 +51,30 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final taskProvider = context.watch<TaskProvider>();
-    final localizations = AppLocalizations.of(context)!; // Obtener localización actual
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        // Usar traducción en el título
         title: Text("Titulo"),
         actions: [
-          // IconButton para cambiar tema claro/oscuro
+          // ✅ Botón para cambiar idioma
+          IconButton(
+            icon: const Icon(Icons.language),
+            tooltip: 'Idioma / Language',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
+          // ✅ Botón para cambiar tema
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
                 icon: Icon(
-                  themeProvider.isDarkMode
-                      ? Icons.dark_mode
-                      : Icons.light_mode,
+                  themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                 ),
-                // Usar traducción en el tooltip
                 tooltip: localizations.changeTheme,
                 onPressed: () {
                   themeProvider.toggleTheme();
@@ -79,6 +88,14 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         child: Column(
           children: [
             const Header(),
+            // ✅ Texto con pluralización
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                localizations.pendingTasks(taskProvider.tasks.length),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
             Expanded(
               child: AnimationLimiter(
                 child: ListView.builder(
@@ -93,7 +110,6 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                         verticalOffset: 30.0,
                         child: FadeInAnimation(
                           child: Dismissible(
-                            // Integración Hive: uso de task.key (HiveObject)
                             key: ValueKey(task.key),
                             direction: DismissDirection.endToStart,
                             onDismissed: (_) => taskProvider.removeTask(index),
@@ -108,7 +124,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
                               child: const Icon(Icons.delete, color: Colors.white),
                             ),
                             child: TaskCard(
-                              key: ValueKey(task.key), // Integración Hive: uso de task.key
+                              key: ValueKey(task.key),
                               title: task.title,
                               isDone: task.done,
                               dueDate: task.dueDate,

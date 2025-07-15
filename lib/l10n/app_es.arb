@@ -9,13 +9,31 @@
   "addNewTask": "Agregar nueva tarea",
   "selectDate": "Seleccionar fecha",
   "timeLabel": "Hora:",
-  "addTask": "Agregar tarea",
   "dueDate": "Vence:",
   "hourLabel": "Hora:",
   "titleLabel": "Título",
   "changeDate": "Cambiar fecha",
   "saveChanges": "Guardar cambios",
-  "greeting": "Hola, Liliana 👋",
+  "greeting": "Hola, Jesús 👋",
   "todayTasks": "Estas son tus tareas para hoy",
-  "name": "nombre"
+  "name": "nombre",
+
+  // ✅ NUEVAS CLAVES
+  "pendingTasks": "{count, plural, =0{No tienes tareas pendientes} =1{Tienes 1 tarea pendiente} other{Tienes {count} tareas pendientes}}",
+  "@pendingTasks": {
+    "description": "Mensaje que muestra cuántas tareas están pendientes usando pluralización",
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "dueDate": "Vence el {date}",
+  "@dueDate": {
+    "description": "Etiqueta de fecha de vencimiento con formato",
+    "placeholders": {
+      "date": {}
+    }
+  },
+
+  "language": "Idioma"
 }

@@ -6,7 +6,8 @@ import 'screens/tarea_screen.dart';
 import 'tema/tema_app.dart';
 import 'package:provider/provider.dart';
 import 'provider_task/task_provider.dart';
-import 'provider_task/theme_provider.dart'; // NUEVO
+import 'provider_task/theme_provider.dart';
+import 'provider_task/locale_provider.dart'; // ✅ NUEVO: LocaleProvider
 
 // Importar modelo para Hive
 import 'models/task_model.dart';
@@ -17,7 +18,6 @@ import 'services/notification_service.dart';
 // NUEVO: Importar AppLocalizations generado
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 
 void main() async {
   // Asegura que Flutter esté inicializado
@@ -43,7 +43,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => TaskProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // ✅ NUEVO
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // ✅ TEMA
+        ChangeNotifierProvider(create: (_) => LocaleProvider()), // ✅ LOCALIZACIÓN
       ],
       child: const MyApp(),
     ),
@@ -55,6 +56,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context); // ✅ Obtener LocaleProvider
+
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         return MaterialApp(
@@ -64,7 +67,19 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData.dark(),
           themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
 
-          // NUEVO: Configuración de internacionalización
+          // ✅ LOCALIZACIÓN
+          locale: localeProvider.locale,
+          localeResolutionCallback: (locale, supportedLocales) {
+            if (localeProvider.locale != null) {
+              return localeProvider.locale;
+            }
+            for (var supported in supportedLocales) {
+              if (supported.languageCode == locale?.languageCode) {
+                return supported;
+              }
+            }
+            return supportedLocales.first;
+          },
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -72,8 +87,8 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('en'), // Inglés
-            Locale('es'), // Español
+            Locale('en'),
+            Locale('es'),
           ],
 
           home: const TaskScreen(),
