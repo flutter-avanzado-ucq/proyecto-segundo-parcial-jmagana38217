@@ -14,6 +14,11 @@ import 'models/task_model.dart';
 // Importar el servicio de notificaciones
 import 'services/notification_service.dart';
 
+// NUEVO: Importar AppLocalizations generado
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+
 void main() async {
   // Asegura que Flutter esté inicializado
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +63,19 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.theme,
           darkTheme: ThemeData.dark(),
           themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+
+          // NUEVO: Configuración de internacionalización
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'), // Inglés
+            Locale('es'), // Español
+          ],
+
           home: const TaskScreen(),
         );
       },
