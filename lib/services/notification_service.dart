@@ -3,12 +3,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Servicio encargado de configurar y gestionar notificaciones locales
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  /// Inicializa el sistema de notificaciones, configurando Android, iOS y zona horaria
   static Future<void> initializeNotifications() async {
     const androidSettings = AndroidInitializationSettings('ic_notification');
     const iosSettings = DarwinInitializationSettings();
@@ -18,7 +16,7 @@ class NotificationService {
       iOS: iosSettings,
     );
 
-    // Se inicializan las zonas horarias necesarias para que zonedSchedule funcione correctamente
+    // Inicialización de zonas horarias (necesario para notificaciones programadas)
     tz.initializeTimeZones();
 
     await _notificationsPlugin.initialize(
@@ -27,27 +25,23 @@ class NotificationService {
     );
   }
 
-  /// Método llamado cuando el usuario interactúa con una notificación
   static void _onNotificationResponse(NotificationResponse response) {
     if (response.payload != null) {
       print('Payload: ${response.payload}');
     }
   }
 
-  /// Solicita permisos al usuario para mostrar notificaciones (Android y iOS)
   static Future<void> requestPermission() async {
     if (await Permission.notification.isDenied ||
         await Permission.notification.isPermanentlyDenied) {
       await Permission.notification.request();
     }
 
-    // Solicita permisos adicionales en iOS
     await _notificationsPlugin
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  /// Muestra una notificación inmediatamente (sin programar)
   static Future<void> showImmediateNotification({
     required String title,
     required String body,
@@ -63,7 +57,6 @@ class NotificationService {
 
     const details = NotificationDetails(android: androidDetails);
 
-    // Se genera un ID único usando el timestamp actual
     await _notificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch.remainder(100000),
       title,
@@ -73,12 +66,11 @@ class NotificationService {
     );
   }
 
-  /// Programa una notificación para una fecha y hora específicas
   static Future<void> scheduleNotification({
     required String title,
     required String body,
-    required DateTime scheduledDate, // Fecha y hora exacta en que se mostrará la notificación
-    required int notificationId,     // ID único que se guarda en la tarea
+    required DateTime scheduledDate,
+    required int notificationId,
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
@@ -91,19 +83,17 @@ class NotificationService {
 
     const details = NotificationDetails(android: androidDetails);
 
-    // Se usa zonedSchedule para que funcione correctamente según la zona horaria del dispositivo
     await _notificationsPlugin.zonedSchedule(
       notificationId,
       title,
       body,
-      tz.TZDateTime.from(scheduledDate, tz.local), // Convierte la fecha a zona horaria local
+      tz.TZDateTime.from(scheduledDate, tz.local),
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
     );
   }
 
-  /// Cancela una notificación programada usando su identificador único
   static Future<void> cancelNotification(int id) async {
     await _notificationsPlugin.cancel(id);
   }
