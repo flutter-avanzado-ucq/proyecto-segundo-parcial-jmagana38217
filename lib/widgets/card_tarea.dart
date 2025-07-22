@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // ✅ Importar intl para formato de fecha
+import 'package:intl/intl.dart'; // Importar intl para formato de fecha
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskCard extends StatelessWidget {
@@ -66,7 +66,7 @@ class TaskCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // ✅ Fecha localizada y traducida
+          // Fecha localizada y traducida
           if (dueDate != null)
             Builder(
               builder: (context) {

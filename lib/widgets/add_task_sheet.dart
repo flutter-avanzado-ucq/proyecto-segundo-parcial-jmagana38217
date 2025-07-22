@@ -30,7 +30,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       int? notificationId;
       DateTime? finalDueDate;
 
-      // practica: notificación inmediata al agregar
+      // Notificación inmediata al agregar la tarea
       await NotificationService.showImmediateNotification(
         title: 'Nueva tarea',
         body: 'Has agregado la tarea: $text',
@@ -38,7 +38,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       );
 
       if (_selectedDate != null && _selectedTime != null) {
-        // practica: aquí se combina la FECHA y HORA seleccionadas por el usuario para programar la notificación exacta
+        // Combina fecha y hora para programar notificación
         finalDueDate = DateTime(
           _selectedDate!.year,
           _selectedDate!.month,
@@ -47,23 +47,23 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           _selectedTime!.minute,
         );
 
-        // practica: generación de un identificador único para la notificación programada
+        // Genera un ID único para la notificación programada
         notificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
         await NotificationService.scheduleNotification(
           title: 'Recordatorio de tarea',
           body: 'No olvides: $text',
-          scheduledDate: finalDueDate, // practica: FECHA y HORA exacta de la notificación
+          scheduledDate: finalDueDate,
           payload: 'Tarea programada: $text para $finalDueDate',
-          notificationId: notificationId, // practica: se pasa el identificador único para esta notificación
+          notificationId: notificationId,
         );
       }
 
-      // Integración Hive: guardar la tarea en Provider + Hive
+      // Guardar la tarea en Provider + Hive
       Provider.of<TaskProvider>(context, listen: false).addTask(
         text,
-        dueDate: finalDueDate ?? _selectedDate, // practica: aquí se guarda la FECHA y HORA completas en la tarea
-        notificationId: notificationId, // practica: se guarda el identificador de la notificación programada
+        dueDate: finalDueDate ?? _selectedDate,
+        notificationId: notificationId,
       );
 
       Navigator.pop(context);
@@ -130,7 +130,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             children: [
               ElevatedButton(
                 onPressed: _pickDate,
-                child: Text("Selecciona una fecha"),
+                child: Text(localizations.selectDate),
               ),
               const SizedBox(width: 10),
               if (_selectedDate != null)
@@ -147,7 +147,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               const SizedBox(width: 10),
               Text(localizations.timeLabel),
               if (_selectedTime != null)
-                Text('${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'),
+                Text(
+                  '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}',
+                ),
             ],
           ),
           const SizedBox(height: 12),

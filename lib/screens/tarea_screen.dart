@@ -7,9 +7,10 @@ import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
 import '../provider_task/task_provider.dart';
 import '../provider_task/theme_provider.dart';
-import '../screens/settings_screen.dart'; // ✅ NUEVO: Importar SettingsScreen
+// import '../screens/settings_screen.dart'; // Comenta si no lo tienes o no lo usas
+import '../provider_task/weather_provider.dart';
 
-// Importar AppLocalizations generado
+// Importar localizaciones
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -29,6 +30,12 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+
+    // Llamada simplificada a carga de clima sin parámetros
+    Future.microtask(() async {
+      final weatherProvider = context.read<WeatherProvider>();
+      await weatherProvider.loadWeather();  // carga con lat/lon fijos dentro del provider
+    });
   }
 
   @override
@@ -55,9 +62,10 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Titulo"),
+        title: Text(localizations.appTitle), // Título localizado
         actions: [
-          // ✅ Botón para cambiar idioma
+          // Comentado para evitar error si no tienes SettingsScreen
+          /*
           IconButton(
             icon: const Icon(Icons.language),
             tooltip: 'Idioma / Language',
@@ -68,7 +76,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
               );
             },
           ),
-          // ✅ Botón para cambiar tema
+          */
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -88,11 +96,10 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
         child: Column(
           children: [
             const Header(),
-            // ✅ Texto con pluralización
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
-                localizations.pendingTasks(taskProvider.tasks.length),
+                localizations.todayTasks,  // Texto localizado simple
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
