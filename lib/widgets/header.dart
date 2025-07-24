@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animaciones_notificaciones/provider_task/holiday_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../provider_task/weather_provider.dart';
+import 'provider_task/holiday_provider.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -12,6 +14,9 @@ class Header extends StatelessWidget {
 
     final weatherProvider = Provider.of<WeatherProvider>(context);
     final weather = weatherProvider.weatherData;
+
+    final holidayProvider = Provider.of<HolidayProvider>(context);
+    final holidayToday = holidayProvider.todayHoliday;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -44,6 +49,11 @@ class Header extends StatelessWidget {
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
+                if (holidayToday != null)
+                  Text(
+                      'Hoy es feriado: ${holidayToday.LocalName}',
+                      style: const TextStyle(color: Colors.white70, fontSize: 14)
+                  ),
                 if (weather != null)
                   Row(
                     children: [

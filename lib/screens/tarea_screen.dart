@@ -7,10 +7,10 @@ import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
 import '../provider_task/task_provider.dart';
 import '../provider_task/theme_provider.dart';
-// import '../screens/settings_screen.dart'; // Comenta si no lo tienes o no lo usas
 import '../provider_task/weather_provider.dart';
+import '../provider_task/holiday_provider.dart';
 
-// Importar localizaciones
+// Localizaciones
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -31,10 +31,19 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 500),
     );
 
-    // Llamada simplificada a carga de clima sin parámetros
+    // Ejecutar tareas asincrónicas después de construir el widget
     Future.microtask(() async {
       final weatherProvider = context.read<WeatherProvider>();
-      await weatherProvider.loadWeather();  // carga con lat/lon fijos dentro del provider
+      try {
+        // Si loadWeather() requiere lat/lon, pásalos aquí
+        await weatherProvider.loadWeather(); // <- asegúrate que el método no requiera params o tenga valores por defecto
+      } catch (_) {}
+
+      final now = DateTime.now();
+      context.read<HolidayProvider>().loadHolidays(
+        year: now.year,
+        countryCode: 'MX',
+      );
     });
   }
 
@@ -62,9 +71,8 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.appTitle), // Título localizado
+        title: Text(localizations.appTitle),
         actions: [
-          // Comentado para evitar error si no tienes SettingsScreen
           /*
           IconButton(
             icon: const Icon(Icons.language),
@@ -99,7 +107,7 @@ class _TaskScreenState extends State<TaskScreen> with SingleTickerProviderStateM
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
-                localizations.todayTasks,  // Texto localizado simple
+                localizations.todayTasks,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),

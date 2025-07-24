@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'provider_task/weather_provider.dart';
 import 'provider_task/task_provider.dart';
 import 'provider_task/theme_provider.dart';
+import 'provider_task/theme_provider.dart';
 
 // Localizations
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -20,6 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
+        ChangeNotifierProvider(create: (_) => HolidayProvider()),
       ],
       child: const MyApp(),
     ),

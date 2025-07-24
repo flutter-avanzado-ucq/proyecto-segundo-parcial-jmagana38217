@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importar intl para formato de fecha
+import 'package:intl/intl.dart'; // Para formato de fecha
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart'; // Asegúrate de importar esto si usas context.watch
+import '../provider_task/holiday_provider.dart';
 
 class TaskCard extends StatelessWidget {
   final String title;
@@ -25,6 +27,14 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
+    final holidays = context.watch<HolidayProvider>().holidays;
+    final isHoliday = dueDate != null &&
+        holidays != null &&
+        holidays.any((h) =>
+            h.date.year == dueDate!.year &&
+            h.date.month == dueDate!.month &&
+            h.date.day == dueDate!.day);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -66,16 +76,32 @@ class TaskCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Fecha localizada y traducida
           if (dueDate != null)
             Builder(
               builder: (context) {
                 final locale = Localizations.localeOf(context).languageCode;
                 final formattedDate = DateFormat.yMMMMd(locale).format(dueDate!);
-                final translatedDueDate = localizations.dueDate(formattedDate);
-                return Text(
-                  translatedDueDate,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                final translatedDueDate =
+                    localizations.dueDate(formattedDate);
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      translatedDueDate,
+                      style: const TextStyle(
+                          fontSize: 12, color: Colors.grey),
+                    ),
+                    if (isHoliday)
+                      Text(
+                        localizations.holidayTag,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
                 );
               },
             ),
